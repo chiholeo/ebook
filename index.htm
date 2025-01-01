@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EPUB File Index</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 5px;
+  }
+</style>
+</head>
+<body>
+<h1>EPUB File Index</h1>
+<ul id="file-list"></ul>
+
+<script>
+fetch('https://api.github.com/repos/<username>/<repository>/contents/')
+  .then(response => response.json())
+  .then(data => {
+    const fileList = document.getElementById('file-list');
+    data.forEach(item => {
+      if (item.name.endsWith('.epub')) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = item.download_url;
+        a.textContent = item.name;
+        a.download = item.name;
+        li.appendChild(a);
+        fileList.appendChild(li);
+      }
+    });
+  });
+</script>
+</body>
+</html>
