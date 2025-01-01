@@ -12,6 +12,7 @@
   ul {
     list-style-type: none;
     padding: 0;
+    margin-left: 20px;
   }
   li {
     margin-bottom: 5px;
@@ -20,25 +21,38 @@
 </head>
 <body>
 <h1>EPUB File Index</h1>
-<ul id="file-list"></ul>
+<div id="file-list"></div>
 
 <script>
-fetch('https://api.github.com/repos/chiholeo/ebook/contents/')
-  .then(response => response.json())
-  .then(data => {
-    const fileList = document.getElementById('file-list');
-    data.forEach(item => {
-      if (item.name.endsWith('.epub')) {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = item.download_url;
-        a.textContent = item.name;
-        a.download = item.name;
-        li.appendChild(a);
-        fileList.appendChild(li);
-      }
-    });
-  });
+function fetchDirectoryContents(url, parentElement) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(item => {
+                if (item.type === 'file' && item.name.endsWith('.epub')) {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = item.download_url;
+                    a.textContent = item.name;
+                    a.download = item.name;
+                    li.appendChild(a);
+                    parentElement.appendChild(li);
+                } else if (item.type === 'dir') {
+                    const heading = document.createElement('h2');
+                    heading.textContent = item.name;
+                    parentElement.appendChild(heading);
+                    const subList = document.createElement('ul');
+                    parentElement.appendChild(subList);
+                    fetchDirectoryContents(item.url, subList);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching directory contents:', error);
+        });
+}
+
+fetchDirectoryContents('https://api.github.com/repos/chiholeo/ebook/contents/', document.getElementById('file-list'));
 </script>
 </body>
 </html>
