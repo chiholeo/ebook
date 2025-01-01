@@ -23,7 +23,7 @@
 <ul id="file-list"></ul>
 
 <script>
-fetch('https://api.github.com/repos/<username>/<repository>/contents/')
+fetch('https://api.github.com/repos/chiholeo/ebook/contents/')
   .then(response => response.json())
   .then(data => {
     const fileList = document.getElementById('file-list');
